@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require('mongoose');
 const passport = require("passport");
 const parseBearerToken = require("parse-bearer-token");
 require("jsonwebtoken");
@@ -41,7 +42,7 @@ router.get('/verify', (req, res) => {
         const userID = verifyToken.body.sub;
         Users.find({_id: userID})
             .then(user => {
-                res.send(user.email);
+                res.send(JSON.stringify(user));
             })
     } else {
         // IF THERE IS NO TOKEN
