@@ -8,6 +8,9 @@ const users = require("./routes/users.js");
 const tasks = require("./routes/tasks.js");
 const auth = require("./routes/auth.js");
 
+//FOR CORS USING
+const cors = require('cors');
+
 //LOAD USER MODEL
 require("./models/user");
 require("./config/passport")(passport);
@@ -49,11 +52,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+//CORS
+app.use(cors());
 
 app.get('/', function (req, res) {
     res.send('User logout. For start using task-board you need to authorize with google')
