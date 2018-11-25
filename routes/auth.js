@@ -2,11 +2,9 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require('mongoose');
 const passport = require("passport");
-const parseBearerToken = require("parse-bearer-token");
 require("jsonwebtoken");
 const nJwt = require("njwt");
 const keys = require("../config/keys");
-const Users = mongoose.model("users");
 
 router.get("/", function(req, res, next) {
     res.render("index", { title: "Express" });
@@ -33,25 +31,7 @@ router.get(
     }
 );
 
-router.get('/verify', (req, res) => {
-    const config = require('../config/passport.js');
-    const token = parseBearerToken(req);
-    if (token) {
-        //VERIFY TOKEN
-        const verifyToken = nJwt.verify(token, keys.tokenSecret);
-        const userID = verifyToken.body.sub;
-        Users.find({_id: userID})
-            .then(user => {
-                res.send(JSON.stringify(user));
-            })
-    } else {
-        // IF THERE IS NO TOKEN
-            return res.status(403).send({
-            success: false,
-            message: 'No token provided.'
-        });
-    }
-});
+
 
 router.get('/logout', (req, res) => {
     req.logout();
