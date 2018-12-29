@@ -7,6 +7,7 @@ const passport = require("passport");
 const users = require("./routes/users.js");
 const tasks = require("./routes/tasks.js");
 const auth = require("./routes/auth.js");
+// const flash = require('connect-flash');
 
 //FOR CORS USING
 const cors = require('cors');
@@ -63,4 +64,6 @@ app.use("/users", users);
 app.use("/tasks", tasks);
 app.use("/auth", auth);
 
+
 app.listen(keys.port);
+console.log(keys.port);

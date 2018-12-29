@@ -7,6 +7,7 @@ require("jsonwebtoken");
 const nJwt = require("njwt");
 const keys = require("../config/keys");
 const Users = mongoose.model("users");
+const passport = require('passport');
 
 //LOAD USER MODEL
 const User = mongoose.model("users");
@@ -46,7 +47,12 @@ router.get("/:id", (req, res) => {
         })
 });
 
+//LOCAL REGISTRATION
+//
 
+
+
+//DELETE
 router.delete("/", (req, res) => {
     res.send("Invalid message or user does not have permission to delete user");
 });

@@ -1,31 +1,41 @@
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcrypt-nodejs');
 
 //CREATE SCHEMA
 const UserSchema = new Schema({
-    googleID:{
-        type:String,
-        required:true
+
+    password: {
+        type: String
     },
-    firstName:{
-        type:String
+
+    googleID: {
+        type: String
     },
-    email:{
-        type:String,
-        required:true
+    firstName: {
+        type: String
     },
-    lastName:{
-        type:String
+    email: {
+        type: String,
+        required: true
     },
-    date:{
-        type:Date,
+    lastName: {
+        type: String
+    },
+    date: {
+        type: Date,
         default: Date.now
     },
-    image:{
-        type:String
+    image: {
+        type: String
     },
 
 });
+UserSchema.methods.generateHash = function (password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+};
 
-mongoose.model("users",UserSchema);
+UserSchema.methods.validPassword = function (password) {
+    return bcrypt.compareSync(password, this.password);
+};
+mongoose.model("users", UserSchema);
