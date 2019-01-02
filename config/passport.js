@@ -2,8 +2,6 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const mongoose = require("mongoose");
 const keys = require("./keys");
 const User = mongoose.model('users');
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
 
 module.exports = function (passport) {
     passport.use(
@@ -14,7 +12,7 @@ module.exports = function (passport) {
             proxy: true
         }, (accessToken, refreshToken, profile, done) => {
             const image = profile.photos[0].value.substring(0, profile.photos[0].value.indexOf('?'));
-            const newUser = {
+                const newUser = {
                 googleID: profile.id,
                 email: profile.emails[0].value,
                 token: accessToken,
