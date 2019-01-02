@@ -44,6 +44,8 @@ module.exports = function (passport) {
 
 //---------------------------local login----------------------------------------
 
+
+
     //AUTH LOCAL LOGIN
     passport.use(new LocalStrategy({
             usernameField: 'email',
@@ -57,10 +59,10 @@ module.exports = function (passport) {
                     return done(err);
                 }
                 if (!user) {
-                    return done(JSON.stringify({info: 'User does not exist, please registry!'}));
+                    return done('User does not exist, please registry!');
                 }
                 if (!user.password) {
-                    return done(JSON.stringify({info: 'User already exist, please login with Google!'}));
+                    return done('User already exist, please login with Google!');
                 }
                 bcrypt.compare(password, user.password, (err, isMatch) => {
                     if (err) throw err;
@@ -68,7 +70,7 @@ module.exports = function (passport) {
                         const success = "User login successful1";
                         return done(null, user, success);
                     } else {
-                        return done(JSON.stringify({info: "Ypss... Password is not correct! Please, try again!"}));
+                        return done("Password is not correct! Please, try again!");
                     }
                 });
             });

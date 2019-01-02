@@ -35,13 +35,18 @@ router.get(
 );
 
 
+
+
 //AUTH LOCAL LOGIN
 router.post(
     "/local/login",
     passport.authenticate('local', {
         failureFlash: true,
+        failWithError: true,
+
     }),
-    function (req, res) {
+
+    function (req, res, next) {
         const user = req.user;
         const claims = {
             sub: req.user._id,
@@ -51,8 +56,14 @@ router.post(
         const jwt = nJwt.create(claims, keys.tokenSecret);
         const token = jwt.compact();
         console.log("Successful login, token created");
-        res.send(token);
-    });
+        return res.json({ token: token, user: req.user });
+
+    },
+    function(err, req, res, next) {
+        // Handle error
+        return res.status(401).send({ success: false, message: err })
+    }
+    );
 
 
 //LOCAL SIGN UP - REGISTRY
@@ -68,7 +79,7 @@ const status = 400;
         User.findOne({email: req.body.email})
             .then(user => {
                 if (user) {
-                    console.log(user)
+                    console.log(user);
                     res.status(status).send({info: 'User already exists! Please login'});
                 }
                 else {
