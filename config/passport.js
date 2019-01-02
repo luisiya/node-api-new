@@ -2,6 +2,8 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const mongoose = require("mongoose");
 const keys = require("./keys");
 const User = mongoose.model('users');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
 
 module.exports = function (passport) {
     passport.use(
