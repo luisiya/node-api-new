@@ -8,6 +8,18 @@ const keys = require("../config/keys");
 const User = mongoose.model("users");
 const bcrypt = require('bcrypt');
 
+const passwordBcrypt = (pass) => {
+    const claims = {
+        sub: pass,
+        iss: 'task-board',
+        permissions: 'upload-photos'
+    };
+    const jwt = nJwt.create(claims, keys.tokenSecret);
+    const token = jwt.compact();
+    return token;
+};
+
+
 
 router.get("/", function (req, res, next) {
     res.render("index", {title: "Express"});
@@ -30,7 +42,7 @@ router.get(
         };
         const jwt = nJwt.create(claims, keys.tokenSecret);
         const token = jwt.compact();
-        res.redirect("http://localhost:3000?token=" + token);
+        res.redirect("https://tasktrecker-go-it.herokuapp.com?token=" + token);
     }
 );
 
@@ -56,12 +68,16 @@ router.post(
         const jwt = nJwt.create(claims, keys.tokenSecret);
         const token = jwt.compact();
         console.log("Successful login, token created");
-        return res.json({ token: token, user: req.user });
-
+        const userData  ={};
+        userData.name = req.user.name;
+        userData.password = req.user.password;
+        userData.id = req.user._id;
+        userData.email = req.user.email;
+        return res.json({ token: token, userData });
     },
     function(err, req, res, next) {
         // Handle error
-        return res.status(401).send({ success: false, message: err })
+        return res.status(401).send({ success: false, message: 'Please, write your email and password for authorization' })
     }
     );
 
@@ -69,32 +85,41 @@ router.post(
 //LOCAL SIGN UP - REGISTRY
 router.post('/register', (req, res) => {
 const status = 400;
-    if (req.body.password != req.body.password2) {
-        res.status(status).send({info: 'Two passwords are not match'});
+    if (req.body.name.length < 1) {
+        res.status(status).send({info: 'The name field is required! Please, write your name.'});
     }
     if (req.body.password.length < 4) {
-        res.status(status).send({info: 'Passsword length should be more than 4 symbols'});
+        res.status(status).send({info: 'Password length should be more than 4 symbols'});
     }
      else {
         User.findOne({email: req.body.email})
             .then(user => {
                 if (user) {
-                    console.log(user);
+                    console.log(user)
                     res.status(status).send({info: 'User already exists! Please login'});
                 }
                 else {
+                    const token = passwordBcrypt(req.body.password);
                     const newUser = new User({
                         name: req.body.name,
                         email: req.body.email,
                         password: req.body.password
                     });
-                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.genSalt(10, (err, salt) => {
                         bcrypt.hash(newUser.password, salt, (err, hash) => {
                             if (err) throw err;
                             newUser.password = hash;
+
                             newUser.save()
-                                .then(user => {
-                                    res.status(200).send({info: 'Successful registration', user});
+                                .then(() => {
+                                    const dataUser = {};
+                                    dataUser.name = newUser.name;
+                                    dataUser.email = newUser.email;
+                                    dataUser.password = newUser.password;
+                                    dataUser.token = token;
+                                    res.status(200).send({info: 'Successful registration', dataUser});
+                                    // res.redirect("https://tasktrecker-go-it.herokuapp.com");
+
                                 })
                                 .catch(err => {
                                     console.log(err);

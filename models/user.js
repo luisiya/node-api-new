@@ -12,15 +12,12 @@ const UserSchema = new Schema({
     googleID: {
         type: String
     },
-    firstName: {
-        type: String
-    },
+    name: {
+        type: String,
+            },
     email: {
         type: String,
         required: true
-    },
-    lastName: {
-        type: String
     },
     date: {
         type: Date,

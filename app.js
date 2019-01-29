@@ -57,7 +57,7 @@ app.use((req, res, next) => {
 app.use(cors());
 
 app.get('/', function (req, res) {
-    res.send('User logout. For start using task-board you need to authorize with google')
+    res.send('User is not logged in. To use task board you need to authorize')
 });
 //USE ROUTES
 app.use("/users", users);

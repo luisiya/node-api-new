@@ -27,7 +27,12 @@ router.get('/me', (req, res) => {
         const userID = verifyToken.body.sub;
         Users.find({_id: userID})
             .then(user => {
-                res.send(JSON.stringify(user));
+                console.log(user)
+                const newUser = {};
+                newUser.name = user[0].name;
+                newUser.email = user[0].email;
+                newUser.password = user[0].password;
+                res.send(JSON.stringify(newUser));
             })
     } else {
         // IF THERE IS NO TOKEN
