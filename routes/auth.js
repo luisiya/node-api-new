@@ -33,11 +33,8 @@ router.get(
     "/google/callback",
     passport.authenticate("google", {failureRedirect: "/", session: false}),
     function (req, res) {
-        const token = passwordBcrypt(req.body.password);
-        const userData={};
-        userData.token = token;
-        // res.redirect("https://tasktrecker-go-it.herokuapp.com");
-        res.redirect("https://tasktrecker-go-it.herokuapp.com?token==" + token );
+        const token = passwordBcrypt(req.user._id);
+        res.status(200).redirect("https://tasktrecker-go-it.herokuapp.com?token=" + token );
     }
 );
 
