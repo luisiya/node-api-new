@@ -19,8 +19,6 @@ const passwordBcrypt = (pass) => {
     return token;
 };
 
-
-
 router.get("/", function (req, res, next) {
     res.render("index", {title: "Express"});
 });
@@ -35,19 +33,13 @@ router.get(
     "/google/callback",
     passport.authenticate("google", {failureRedirect: "/", session: false}),
     function (req, res) {
-        const claims = {
-            sub: req.user._id,
-            iss: 'task-board',
-            permissions: 'upload-photos'
-        };
-        const jwt = nJwt.create(claims, keys.tokenSecret);
-        const token = jwt.compact();
-        res.redirect("https://tasktrecker-go-it.herokuapp.com?token=" + token);
+        const token = passwordBcrypt(req.body.password);
+        const userData={};
+        userData.token = token;
+        // res.redirect("https://tasktrecker-go-it.herokuapp.com");
+        res.redirect("https://tasktrecker-go-it.herokuapp.com?token==" + token );
     }
 );
-
-
-
 
 //AUTH LOCAL LOGIN
 router.post(
@@ -55,29 +47,22 @@ router.post(
     passport.authenticate('local', {
         failureFlash: true,
         failWithError: true,
-
     }),
 
-    function (req, res, next) {
+    function (req, res) {
         const user = req.user;
-        const claims = {
-            sub: req.user._id,
-            iss: 'task-board',
-            permissions: 'upload-photos'
-        };
-        const jwt = nJwt.create(claims, keys.tokenSecret);
-        const token = jwt.compact();
+        const token = passwordBcrypt(req.user._id);
         console.log("Successful login, token created");
         const userData  ={};
         userData.name = req.user.name;
-        userData.password = req.user.password;
         userData.id = req.user._id;
         userData.email = req.user.email;
-        return res.json({ token: token, userData });
+        userData.token = token;
+        return res.json({ info: 'Successful logged in', userData });
     },
     function(err, req, res, next) {
         // Handle error
-        return res.status(401).send({ success: false, message: 'Please, write your email and password for authorization' })
+       return res.status(401).send({ success: false, message: err });
     }
     );
 
@@ -85,7 +70,7 @@ router.post(
 //LOCAL SIGN UP - REGISTRY
 router.post('/register', (req, res) => {
 const status = 400;
-    if (req.body.name.length < 1) {
+    if (req.body.name.length < 1 || !req.body.name === "") {
         res.status(status).send({info: 'The name field is required! Please, write your name.'});
     }
     if (req.body.password.length < 4) {
@@ -95,11 +80,11 @@ const status = 400;
         User.findOne({email: req.body.email})
             .then(user => {
                 if (user) {
-                    console.log(user)
-                    res.status(status).send({info: 'User already exists! Please login'});
+                    console.log(user);
+                    res.status(400).send({info: 'User already exist, please logged in', user});
                 }
                 else {
-                    const token = passwordBcrypt(req.body.password);
+
                     const newUser = new User({
                         name: req.body.name,
                         email: req.body.email,
@@ -112,13 +97,13 @@ const status = 400;
 
                             newUser.save()
                                 .then(() => {
+                                    const token = passwordBcrypt(newUser._id);
                                     const dataUser = {};
                                     dataUser.name = newUser.name;
                                     dataUser.email = newUser.email;
-                                    dataUser.password = newUser.password;
+                                    dataUser.id = newUser.id;
                                     dataUser.token = token;
                                     res.status(200).send({info: 'Successful registration', dataUser});
-                                    // res.redirect("https://tasktrecker-go-it.herokuapp.com");
 
                                 })
                                 .catch(err => {

@@ -9,11 +9,9 @@ const keys = require("../config/keys");
 const Users = mongoose.model("users");
 const passport = require('passport');
 
-//LOAD USER MODEL
-const User = mongoose.model("users");
 
 router.get("/", (req, res) => {
-    User.find({})
+    Users.find({})
         .then(users => {
             res.send(JSON.stringify(users));
         })
@@ -22,21 +20,22 @@ router.get('/me', (req, res) => {
     const config = require('../config/passport.js');
     const token = parseBearerToken(req);
     if (token) {
+
         //VERIFY TOKEN
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
         Users.find({_id: userID})
             .then(user => {
-                console.log(user)
-                const newUser = {};
-                newUser.name = user[0].name;
-                newUser.email = user[0].email;
-                newUser.password = user[0].password;
-                res.send(JSON.stringify(newUser));
+                const dataUser = {};
+                dataUser.name = user[0].name;
+                dataUser.email = user[0].email;
+                dataUser.id = user[0]._id;
+                res.status(200).send({info: 'Successful get info', dataUser});
+
             })
     } else {
         // IF THERE IS NO TOKEN
-        return res.status(403).send({
+        return res.status(404).send({
             success: false,
             message: 'No token provided.'
         });
@@ -44,22 +43,18 @@ router.get('/me', (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-    User.findOne({
+    Users.findOne({
         _id: req.params.id
     })
         .then(user => {
-            res.send(JSON.stringify(user));
+            res.status(200).send({info: 'Successful get info', user});
         })
 });
-
-//LOCAL REGISTRATION
-//
-
 
 
 //DELETE
 router.delete("/", (req, res) => {
-    res.send("Invalid message or user does not have permission to delete user");
-});
+    res.status(403).send({info: 'Invalid message / NO permission to delete user'});
+    });
 
 module.exports = router;

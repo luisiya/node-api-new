@@ -50,14 +50,13 @@ module.exports = function (passport) {
     passport.use(new LocalStrategy({
             usernameField: 'email',
             passwordField: 'password',
-            nameField:'name',
             failureFlash: true,
             session: false
         }, (email, password, done) => {
             console.log("Started auth");
             User.findOne({'email': email}, function (err, user) {
-                if (err) {
 
+                if (err) {
                     return done(err);
                 }
                 if (!user) {
@@ -72,7 +71,8 @@ module.exports = function (passport) {
                         const success = "User login successful1";
                         return done(null, user, success);
                     } else {
-                        return done("Password is not correct! Please, try again!");
+
+                        return done( "Password is not correct! Please, try again!");
                     }
                 });
             });
