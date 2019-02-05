@@ -8,7 +8,7 @@ const nJwt = require("njwt");
 const keys = require("../config/keys");
 const Users = mongoose.model("users");
 const passport = require('passport');
-
+const cors = require('cors');
 
 router.get("/", (req, res) => {
     Users.find({})
@@ -16,7 +16,7 @@ router.get("/", (req, res) => {
             res.send(JSON.stringify(users));
         })
 });
-router.get('/me', (req, res) => {
+router.get('/me', cors(), (req, res) => {
     const config = require('../config/passport.js');
     const token = parseBearerToken(req);
     if (token) {
