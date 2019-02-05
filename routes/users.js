@@ -18,9 +18,9 @@ router.get("/", (req, res) => {
         })
 });
 router.get('/me',  (req, res) => {
-
-      const token = parseBearerToken(req);
-console.log(token)
+  console.log(req)
+    const token = parseBearerToken(req);
+    console.log(token)
     if (token) {
 
         //VERIFY TOKEN
