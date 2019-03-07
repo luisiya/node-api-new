@@ -11,6 +11,8 @@ const passport = require('passport');
 const config = require('../config/passport.js');
 // const cors = require('cors');
 
+
+
 router.get("/", (req, res) => {
     Users.find({})
         .then(users => {

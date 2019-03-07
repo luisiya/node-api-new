@@ -18,7 +18,16 @@ const passwordBcrypt = (pass) => {
     const token = jwt.compact();
     return token;
 };
+const createNewUser = (user) => {
+    const token = passwordBcrypt(user._id);
 
+    const dataUser = {};
+    dataUser.name = user.name;
+    dataUser.email = user.email;
+    dataUser.id = user.id;
+    dataUser.token = token;
+    return dataUser;
+}
 router.get("/", function (req, res, next) {
     res.render("index", {title: "Express"});
 });
@@ -47,15 +56,9 @@ router.post(
     }),
 
     function (req, res) {
-        const user = req.user;
-        const token = passwordBcrypt(req.user._id);
         console.log("Successful login, token created");
-        const userData  ={};
-        userData.name = req.user.name;
-        userData.id = req.user._id;
-        userData.email = req.user.email;
-        userData.token = token;
-        return res.json({ info: 'Successful logged in', userData });
+        const dataUser = createNewUser(req.user);
+        return res.json({ info: 'Successful logged in', dataUser });
     },
     function(err, req, res, next) {
         // Handle error
@@ -77,8 +80,11 @@ const status = 400;
         User.findOne({email: req.body.email})
             .then(user => {
                 if (user) {
-                    console.log(user);
-                    res.status(400).send({info: 'User already exist, please logged in', user});
+                    const dataUser = {};
+                    dataUser.name = req.body.name;
+                    dataUser.email = req.body.email;
+
+                    res.status(400).send({info: 'User already exist, please logged in', dataUser});
                 }
                 else {
 
@@ -94,12 +100,7 @@ const status = 400;
 
                             newUser.save()
                                 .then(() => {
-                                    const token = passwordBcrypt(newUser._id);
-                                    const dataUser = {};
-                                    dataUser.name = newUser.name;
-                                    dataUser.email = newUser.email;
-                                    dataUser.id = newUser.id;
-                                    dataUser.token = token;
+                                    const dataUser = createNewUser(newUser);
                                     res.status(200).send({info: 'Successful registration', dataUser});
 
                                 })

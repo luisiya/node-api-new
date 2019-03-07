@@ -10,7 +10,7 @@ const auth = require("./routes/auth.js");
 // const flash = require('connect-flash');
 
 //FOR CORS USING
-// const cors = require('cors');
+const cors = require('cors');
 
 //LOAD USER MODEL
 require("./models/user");
@@ -54,7 +54,7 @@ app.use((req, res, next) => {
 });
 
 //CORS
-// app.use(cors());
+app.use(cors());
 
 app.get('/', function (req, res) {
     res.send('User is not logged in. To use task board you need to authorize')

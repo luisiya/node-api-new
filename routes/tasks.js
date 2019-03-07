@@ -13,17 +13,41 @@ require("../models/tasks.js");
 //LOAD USER MODEL
 const Tasks = mongoose.model("tasks");
 
+const createTask = (tasks) => {
+    const task = {};
+    task.id = tasks._id;
+    task.title = tasks.title;
+    task.description = tasks.description;
+    task.color = tasks.color;
+    task.deadline = tasks.deadline;
+    task.reminder = tasks.reminder;
+    task.user = tasks.user;
+    return task;
+};
+
 //GET ALL TASKS OF USER
 router.get("/", (req, res) => {
     const token = parseBearerToken(req);
     if (token) {
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
-        Tasks.find({
-            user:userID
-        })
+
+        const updateParams = req.body;
+        Tasks.findOneAndUpdate(
+            {user:userID},
+            updateParams,
+            {new: true}
+        )
             .then(tasks => {
-                res.send(JSON.stringify(tasks));
+                try{
+                        const task = createTask(tasks);
+                        res.send(JSON.stringify(task));
+
+                }
+                catch(error){
+                    res.status(404).send({info: 'No tasks'});
+                }
+
             })
     }
     else {
@@ -40,17 +64,19 @@ router.post("/add", (req, res) => {
     if (token) {
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
-        const newTask = new Tasks({
+         const newTask = new Tasks({
             title: req.body.title,
             description: req.body.description,
             color:req.body.color,
             deadline:req.body.deadline,
             reminder:req.body.reminder,
             user:userID
+
         });
         new Tasks(newTask)
             .save()
-            .then(task => {
+            .then(tasks => {
+                const task = createTask(tasks);
                 res.send(JSON.stringify(task))
             })
     }
@@ -71,10 +97,13 @@ router.put("/:id", (req, res) => {
         const updateParams = req.body;
         Tasks.findOneAndUpdate(
         {_id:req.params.id},
-            updateParams
+            updateParams,
+            {new: true}
         )
+
             .then(tasks => {
-                res.send(JSON.stringify(tasks));
+                const task = createTask(tasks);
+                res.send(JSON.stringify(task));
             })
     }
     else {
