@@ -22,6 +22,9 @@ const TaskSchema = new Schema({
     deadline: {
         type: Date
     },
+    completed: {
+        type: String
+    },
     reminder: {
         type: Date
     }

@@ -22,6 +22,7 @@ const createTask = (tasks) => {
     task.deadline = tasks.deadline;
     task.reminder = tasks.reminder;
     task.user = tasks.user;
+    task.completed = tasks.completed;
     return task;
 };
 
@@ -70,6 +71,7 @@ router.post("/add", (req, res) => {
             color:req.body.color,
             deadline:req.body.deadline,
             reminder:req.body.reminder,
+            completed:req.body.completed,
             user:userID
 
         });
