@@ -12,7 +12,10 @@ require("../models/tasks.js");
 
 //LOAD USER MODEL
 const Tasks = mongoose.model("tasks");
-
+const  replaceKeys = (obj, find, replace) => {
+    return Object.keys(obj).reduce (
+        (acc, key) => Object.assign(acc, { [key.replace(find, replace)]: obj[key] }), {});
+};
 const createTask = (tasks) => {
     const task = {};
     task.id = tasks._id;
@@ -32,18 +35,13 @@ router.get("/", (req, res) => {
     if (token) {
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
-
-        const updateParams = req.body;
-        Tasks.findOneAndUpdate(
-            {user:userID},
-            updateParams,
-            {new: true}
-        )
+        Tasks.find({
+            user:userID
+        })
             .then(tasks => {
                 try{
-                        const task = createTask(tasks);
-                        res.send(JSON.stringify(task));
 
+                    res.send(tasks)
                 }
                 catch(error){
                     res.status(404).send({info: 'No tasks'});
