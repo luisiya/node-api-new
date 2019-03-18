@@ -123,9 +123,10 @@ router.delete("/:id", (req, res) => {
         Tasks.findOneAndDelete({
              user:userID,
             _id:req.params.id
-        },
+        }
         //IF TASK NOT FOUND
-            function(err) { console.log(err, "Task not found"); })
+        //     function(err) { console.log(err, "Task not found"); })
+        )
 
             .then(tasks => {
                 res.send(JSON.stringify(tasks));
@@ -149,7 +150,8 @@ router.delete("/", (req, res) => {
             user:userID,
         }).deleteMany()
             .then(tasks => {
-                res.send(JSON.stringify(tasks));
+                const task = JSON.stringify(tasks);
+                res.status(200).send({info: 'This task already deleted', task})
             })
     }
     else {
