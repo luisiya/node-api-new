@@ -9,9 +9,6 @@ const keys = require("../config/keys");
 const Users = mongoose.model("users");
 const passport = require('passport');
 const config = require('../config/passport.js');
-// const cors = require('cors');
-
-
 
 router.get("/", (req, res) => {
     Users.find({})
@@ -20,9 +17,7 @@ router.get("/", (req, res) => {
         })
 });
 router.get('/me',  (req, res) => {
-  console.log(req)
     const token = parseBearerToken(req);
-    console.log(token)
 
     if (token) {
 
@@ -34,7 +29,7 @@ router.get('/me',  (req, res) => {
                 const dataUser = {};
                 dataUser.name = user[0].name;
                 dataUser.email = user[0].email;
-                dataUser.id = user[0]._id;
+                dataUser._id = user[0]._id;
                 res.status(200).send({info: 'Successful get info', dataUser});
 
             })
@@ -55,7 +50,6 @@ router.get("/:id", (req, res) => {
             res.status(200).send({info: 'Successful get info', user});
         })
 });
-
 
 //DELETE
 router.delete("/", (req, res) => {

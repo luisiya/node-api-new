@@ -20,14 +20,13 @@ const passwordBcrypt = (pass) => {
 };
 const createNewUser = (user) => {
     const token = passwordBcrypt(user._id);
-
     const dataUser = {};
     dataUser.name = user.name;
     dataUser.email = user.email;
-    dataUser.id = user.id;
+    dataUser._id = user.id;
     dataUser.token = token;
     return dataUser;
-}
+};
 router.get("/", function (req, res, next) {
     res.render("index", {title: "Express"});
 });
@@ -43,7 +42,7 @@ router.get(
     passport.authenticate("google", {failureRedirect: "/", session: false}),
     function (req, res) {
         const token = passwordBcrypt(req.user._id);
-        res.status(200).redirect("https://tasktrecker-go-it.herokuapp.com?token=" + token );
+        res.status(200).redirect("https://tasktrecker-go-it.herokuapp.com?token=" + token);
     }
 );
 
@@ -58,25 +57,25 @@ router.post(
     function (req, res) {
         console.log("Successful login, token created");
         const dataUser = createNewUser(req.user);
-        return res.json({ info: 'Successful logged in', dataUser });
+        return res.json({info: 'Successful logged in', dataUser});
     },
-    function(err, req, res, next) {
+    function (err, req, res, next) {
         // Handle error
-       return res.status(401).send({ success: false, message: err });
+        return res.status(401).send({success: false, message: err});
     }
-    );
+);
 
 
 //LOCAL SIGN UP - REGISTRY
 router.post('/register', (req, res) => {
-const status = 400;
+    const status = 400;
     if (req.body.name.length < 1 || !req.body.name === "") {
         res.status(status).send({info: 'The name field is required! Please, write your name.'});
     }
     if (req.body.password.length < 4) {
         res.status(status).send({info: 'Password length should be more than 4 symbols'});
     }
-     else {
+    else {
         User.findOne({email: req.body.email})
             .then(user => {
                 if (user) {
@@ -93,7 +92,7 @@ const status = 400;
                         email: req.body.email,
                         password: req.body.password
                     });
-                        bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.genSalt(10, (err, salt) => {
                         bcrypt.hash(newUser.password, salt, (err, hash) => {
                             if (err) throw err;
                             newUser.password = hash;

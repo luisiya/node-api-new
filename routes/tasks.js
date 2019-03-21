@@ -12,22 +12,6 @@ require("../models/tasks.js");
 
 //LOAD USER MODEL
 const Tasks = mongoose.model("tasks");
-const  replaceKeys = (obj, find, replace) => {
-    return Object.keys(obj).reduce (
-        (acc, key) => Object.assign(acc, { [key.replace(find, replace)]: obj[key] }), {});
-};
-const createTask = (tasks) => {
-    const task = {};
-    task.id = tasks._id;
-    task.title = tasks.title;
-    task.description = tasks.description;
-    task.color = tasks.color;
-    task.deadline = tasks.deadline;
-    task.reminder = tasks.reminder;
-    task.user = tasks.user;
-    task.completed = tasks.completed;
-    return task;
-};
 
 //GET ALL TASKS OF USER
 router.get("/", (req, res) => {
@@ -36,14 +20,14 @@ router.get("/", (req, res) => {
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
         Tasks.find({
-            user:userID
+            user: userID
         })
             .then(tasks => {
-                try{
+                try {
 
                     res.send(tasks)
                 }
-                catch(error){
+                catch (error) {
                     res.status(404).send({info: 'No tasks'});
                 }
 
@@ -63,21 +47,20 @@ router.post("/add", (req, res) => {
     if (token) {
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
-         const newTask = new Tasks({
+        const newTask = new Tasks({
             title: req.body.title,
             description: req.body.description,
-            color:req.body.color,
-            deadline:req.body.deadline,
-            reminder:req.body.reminder,
-            completed:req.body.completed,
-            user:userID
+            color: req.body.color,
+            deadline: req.body.deadline,
+            reminder: req.body.reminder,
+            completed: req.body.completed,
+            user: userID
 
         });
         new Tasks(newTask)
             .save()
             .then(tasks => {
-                const task = createTask(tasks);
-                res.send(JSON.stringify(task))
+                res.send(JSON.stringify(tasks))
             })
     }
     else {
@@ -96,14 +79,13 @@ router.put("/:id", (req, res) => {
         const userID = verifyToken.body.sub;
         const updateParams = req.body;
         Tasks.findOneAndUpdate(
-        {_id:req.params.id},
+            {_id: req.params.id},
             updateParams,
             {new: true}
         )
 
             .then(tasks => {
-                const task = createTask(tasks);
-                res.send(JSON.stringify(task));
+                res.send(JSON.stringify(tasks));
             })
     }
     else {
@@ -121,11 +103,9 @@ router.delete("/:id", (req, res) => {
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
         Tasks.findOneAndDelete({
-             user:userID,
-            _id:req.params.id
-        }
-        //IF TASK NOT FOUND
-        //     function(err) { console.log(err, "Task not found"); })
+                user: userID,
+                _id: req.params.id
+            }
         )
 
             .then(tasks => {
@@ -147,7 +127,7 @@ router.delete("/", (req, res) => {
         const verifyToken = nJwt.verify(token, keys.tokenSecret);
         const userID = verifyToken.body.sub;
         Tasks.find({
-            user:userID,
+            user: userID,
         }).deleteMany()
             .then(tasks => {
                 const task = JSON.stringify(tasks);

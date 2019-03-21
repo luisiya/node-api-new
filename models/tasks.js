@@ -12,18 +12,17 @@ const TaskSchema = new Schema({
         required: true
     },
     description: {
-        type: String,
-        required: true
+        type: String
     },
     color: {
-        type: String,
-        required: true
-    },
+        type: String
+            },
     deadline: {
         type: Date
     },
     completed: {
-        type: String
+        type: Boolean,
+        default: false
     },
     reminder: {
         type: Date
