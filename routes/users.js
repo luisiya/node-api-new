@@ -42,6 +42,32 @@ router.get('/me',  (req, res) => {
     }
 });
 
+//CHANGE INFO ABOUT USER
+router.put("/:id", (req, res) => {
+    const token = parseBearerToken(req);
+    if (token) {
+        const verifyToken = nJwt.verify(token, keys.tokenSecret);
+        const userID = verifyToken.body.sub;
+        const updateParams = req.body;
+        Users.findOneAndUpdate(
+            {_id: req.params.id},
+            updateParams,
+            {new: true}
+        )
+
+            .then(users => {
+                res.send(JSON.stringify(users));
+            })
+    }
+    else {
+        return res.status(403).send({
+            success: false,
+            message: 'No token provided.'
+        });
+    }
+});
+
+
 router.get("/:id", (req, res) => {
     Users.findOne({
         _id: req.params.id

@@ -28,7 +28,8 @@ const createNewUser = (user) => {
     return dataUser;
 };
 router.get("/", function (req, res, next) {
-    res.render("index", {title: "Express"});
+    res.send('hello!');
+    //res.render("index", {title: "Express"});
 });
 
 //GET GOOGLE AUTHENTICATION

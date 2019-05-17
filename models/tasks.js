@@ -24,6 +24,10 @@ const TaskSchema = new Schema({
         type: Boolean,
         default: false
     },
+    reminderShowed:{
+        type: Boolean,
+        default: false
+    },
     reminder: {
         type: Date
     }
