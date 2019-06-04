@@ -34,13 +34,15 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 //COOKIE SESSION
-app.use(cookieParser());
+// app.use(cookieParser());
 
 //EXPRESS SESSION
 app.use(session({
     secret: 'secret',
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true,
+    rolling: true,
+    expires: new Date(Date.now() + 86400)
 }));
 
 //PASSPORT MIDDLEWARE

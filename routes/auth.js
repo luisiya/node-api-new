@@ -12,7 +12,8 @@ const passwordBcrypt = (pass) => {
     const claims = {
         sub: pass,
         iss: 'task-board',
-        permissions: 'upload-photos'
+        permissions: 'upload-photos',
+        expiresInSeconds: 86400
     };
     const jwt = nJwt.create(claims, keys.tokenSecret);
     const token = jwt.compact();

@@ -46,18 +46,42 @@ router.get('/me',  (req, res) => {
 router.put("/:id", (req, res) => {
     const token = parseBearerToken(req);
     if (token) {
-        const verifyToken = nJwt.verify(token, keys.tokenSecret);
-        const userID = verifyToken.body.sub;
-        const updateParams = req.body;
-        Users.findOneAndUpdate(
-            {_id: req.params.id},
-            updateParams,
-            {new: true}
-        )
+            const verifyToken = nJwt.verify(token, keys.tokenSecret);
+            const userID = verifyToken.body.sub;
+            const updateParams = req.body;
 
-            .then(users => {
-                res.send(JSON.stringify(users));
-            })
+             const updateUser =()=>{
+                 Users.findOneAndUpdate(
+                     {_id: req.params.id},
+                     updateParams,
+                     {new: true}
+                 )
+
+                     .then(users => {
+                         console.log("CHECK EMAIL");
+                         console.log(req.body.email);
+                         res.send(JSON.stringify(users))
+
+                     })
+             };
+             if(req.body.email){
+                 Users.findOne(
+                     {email: req.body.email},
+
+                 )
+                     .then(user =>{
+                         if(user){
+                             res.status(400).send({info: `${req.body.email} - already exist, try again`});
+                         }
+                         else{
+                             updateUser();
+                         }
+
+                     });
+             }
+             else{
+                 updateUser();
+             }
     }
     else {
         return res.status(403).send({
@@ -80,6 +104,6 @@ router.get("/:id", (req, res) => {
 //DELETE
 router.delete("/", (req, res) => {
     res.status(403).send({info: 'Invalid message / NO permission to delete user'});
-    });
+});
 
 module.exports = router;
