@@ -16,7 +16,7 @@ router.get("/", (req, res) => {
             res.send(JSON.stringify(users));
         })
 });
-router.get('/me',  (req, res) => {
+router.get('/me', (req, res) => {
     const token = parseBearerToken(req);
 
     if (token) {
@@ -46,42 +46,41 @@ router.get('/me',  (req, res) => {
 router.put("/:id", (req, res) => {
     const token = parseBearerToken(req);
     if (token) {
-            const verifyToken = nJwt.verify(token, keys.tokenSecret);
-            const userID = verifyToken.body.sub;
-            const updateParams = req.body;
+        const verifyToken = nJwt.verify(token, keys.tokenSecret);
+        const userID = verifyToken.body.sub;
+        const updateParams = req.body;
 
-             const updateUser =()=>{
-                 Users.findOneAndUpdate(
-                     {_id: req.params.id},
-                     updateParams,
-                     {new: true}
-                 )
+        const updateUser = () => {
+            Users.findOneAndUpdate(
+                {_id: req.params.id},
+                updateParams,
+                {new: true}
+            )
 
-                     .then(users => {
-                         console.log("CHECK EMAIL");
-                         console.log(req.body.email);
-                         res.send(JSON.stringify(users))
+                .then(users => {
+                    console.log("CHECK EMAIL");
+                    console.log(req.body.email);
+                    res.send(JSON.stringify(users))
 
-                     })
-             };
-             if(req.body.email){
-                 Users.findOne(
-                     {email: req.body.email},
+                })
+        };
+        if (req.body.email) {
+            Users.find(
+                {email: req.body.email})
+                .then(users => {
+                        if (users[0]._id == req.params.id) {
+                            updateUser();
+                        }
+                        else {
+                            res.status(400).send({info: `${req.body.email} - already exist, try again`});
+                        }
 
-                 )
-                     .then(user =>{
-                         if(user){
-                             res.status(400).send({info: `${req.body.email} - already exist, try again`});
-                         }
-                         else{
-                             updateUser();
-                         }
-
-                     });
-             }
-             else{
-                 updateUser();
-             }
+                    }
+                );
+        }
+        else {
+            updateUser();
+        }
     }
     else {
         return res.status(403).send({
