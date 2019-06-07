@@ -57,10 +57,16 @@ router.put("/:id", (req, res) => {
                 {new: true}
             )
 
-                .then(users => {
+                .then(user => {
                     console.log("CHECK EMAIL");
                     console.log(req.body.email);
-                    res.send(JSON.stringify(users))
+
+                    const dataUser = {};
+                    dataUser.name = user.name;
+                    dataUser.email = user.email;
+                    dataUser.id = user._id;
+                    dataUser.date = user.date;
+                    res.status(200).send({info: 'Successful updated', dataUser});
 
                 })
         };
